@@ -376,7 +376,8 @@ export default function HomePage() {
               value={formState.company}
               onChange={(e) => setFormState({ ...formState, company: e.target.value })}
             />
-            <select
+            <select 
+              className="service-select"
               value={formState.projectType}
               onChange={(e) => {
                 const service = services.find((item) => item.title === e.target.value) || services[0];

@@ -1,15 +1,41 @@
-import { NextResponse } from 'next/server';
+import nodemailer from "nodemailer";
+import { NextResponse, NextRequest } from "next/server";
 
-export async function POST(request: Request) {
-  const body = await request.json();
+export async function POST(req: NextRequest) {
+  const { name, email, company, message, service, plan } = await req.json();
 
-  if (!body.name || !body.email || !body.message) {
-    return NextResponse.json({ message: 'Please fill your name, email and message.' }, { status: 400 });
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+
+  const mailBody = [
+    `Name: ${name}`,
+    `Email: ${email}`,
+    `Company: ${company || "-"}`,
+    `Service: ${service}`,
+    `Plan: ${plan}`,
+    "",
+    "Message:",
+    message,
+  ].join("\n");
+
+  try {
+    await transporter.sendMail({
+      from: process.env.GMAIL_USER,
+      to: process.env.GMAIL_USER,
+      replyTo: email,
+      subject: `Project Inquiry - ${service}`,
+      text: mailBody,
+    });
+    return NextResponse.json({ success: true });
+  } catch (error: Error | any) {
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 },
+    );
   }
-
-  const mailto = `mailto:dushyantmanghani@gmail.com?subject=${encodeURIComponent('New inquiry from ' + (body.company || 'website visitor'))}&body=${encodeURIComponent(
-    `Name: ${body.name}\nEmail: ${body.email}\nCompany: ${body.company || '-'}\nProject Type: ${body.projectType || '-'}\n\nMessage:\n${body.message}`
-  )}`;
-
-  return NextResponse.json({ message: 'Thanks! Your inquiry is ready to be emailed.', mailto });
 }

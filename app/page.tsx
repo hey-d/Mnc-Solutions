@@ -145,9 +145,9 @@ export default function HomePage() {
 
       const data = await response.json();
 
-      if (typeof window !== 'undefined') {
-        window.location.href = mailto;
-      }
+      // if (typeof window !== 'undefined') {
+      //   window.location.href = mailto;
+      // }
 
       setStatus({ text: 'Your request has been sent. We will reach out to you soon.', tone: 'success' });
       setFormState({ name: '', email: '', company: '', projectType: selectedService.title, message: '' });
@@ -376,7 +376,7 @@ export default function HomePage() {
               value={formState.company}
               onChange={(e) => setFormState({ ...formState, company: e.target.value })}
             />
-            <select 
+            <select
               className="service-select"
               value={formState.projectType}
               onChange={(e) => {
